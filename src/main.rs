@@ -88,6 +88,7 @@ fn main() {
     let token = encrypted_jwe.unwrap_encrypted().to_string();
 
     // Now, send `token` to your clients
+    println!("{}", token);
 
     // ... some time later, we get token back!
     let token: JWE<PrivateClaims, Empty, Empty> = JWE::new_encrypted(&token);
