@@ -5,32 +5,34 @@ use biscuit::jwe;
 use biscuit::jwk::JWK;
 use biscuit::jws::{self, Secret};
 use biscuit::{ClaimsSet, Empty, RegisteredClaims, SingleOrMultiple, JWE, JWT};
+use chrono::{Duration, prelude::*};
 use serde::{Deserialize, Serialize};
-use std::str::FromStr;
 
 fn main() {
     // Define our own private claims
     #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
     struct PrivateClaims {
-        company: String,
-        department: String,
+        username: String,
+        password: String,
     }
+
+    let now = Utc::now();
 
     #[allow(unused_assignments)]
     // Craft our JWS
     let expected_claims = ClaimsSet::<PrivateClaims> {
         registered: RegisteredClaims {
-            issuer: Some(FromStr::from_str("https://www.acme.com").unwrap()),
-            subject: Some(FromStr::from_str("John Doe").unwrap()),
-            audience: Some(SingleOrMultiple::Single(
-                FromStr::from_str("htts://acme-customer.com").unwrap(),
-            )),
-            not_before: Some(1234.into()),
+            issuer: Some("EMF".into()),
+            subject: Some("node1".into()),
+            audience: Some(SingleOrMultiple::Single("server".into())),
+            not_before: Some(now.into()),
+            issued_at: Some(now.into()),
+            expiry: Some((now + Duration::hours(1)).into()),
             ..Default::default()
         },
         private: PrivateClaims {
-            department: "Toilet Cleaning".to_string(),
-            company: "ACME".to_string(),
+            username: "admin".to_string(),
+            password: "DDNSolutions4U".to_string(),
         },
     };
 

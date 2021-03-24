@@ -11,6 +11,7 @@ name = "bisc"
 version = "0.1.0"
 dependencies = [
  "biscuit",
+ "chrono",
  "hex",
  "num",
  "serde",
