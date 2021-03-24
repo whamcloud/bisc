@@ -1,20 +1,14 @@
-use biscuit::{
-    jwa::{self, Algorithm},
-    jwk::{AlgorithmParameters, CommonParameters, RSAKeyParameters},
+use biscuit::jwa::{
+    ContentEncryptionAlgorithm, EncryptionOptions, KeyManagementAlgorithm, SignatureAlgorithm,
 };
-use num::BigUint;
+use biscuit::jwe;
+use biscuit::jwk::JWK;
+use biscuit::jws::{self, Secret};
+use biscuit::{ClaimsSet, Empty, RegisteredClaims, SingleOrMultiple, JWE, JWT};
+use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 
 fn main() {
-    use biscuit::jwa::{
-        ContentEncryptionAlgorithm, EncryptionOptions, KeyManagementAlgorithm, SignatureAlgorithm,
-    };
-    use biscuit::jwe;
-    use biscuit::jwk::JWK;
-    use biscuit::jws::{self, Secret};
-    use biscuit::{ClaimsSet, Empty, RegisteredClaims, SingleOrMultiple, JWE, JWT};
-    use serde::{Deserialize, Serialize};
-    use std::str::FromStr;
-
     // Define our own private claims
     #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
     struct PrivateClaims {
@@ -55,9 +49,10 @@ fn main() {
     // Encrypt the token
 
     // You would usually have your own AES key for this, but we will use a zeroed key as an example
-    let key = hex::decode("E4CBF7CF9206CF1E56048330A17740EA871DB523407D209F47A10F4B579532B0").unwrap();
+    let key =
+        hex::decode("E4CBF7CF9206CF1E56048330A17740EA871DB523407D209F47A10F4B579532B0").unwrap();
 
-    let key: JWK<Empty> = JWK::new_octet_key(&key, Empty{});
+    let key: JWK<Empty> = JWK::new_octet_key(&key, Empty {});
 
     // We need to create an `EncryptionOptions` with a nonce for AES GCM encryption.
     // You must take care NOT to reuse the nonce. You can simply treat the nonce as a 96 bit
