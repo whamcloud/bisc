@@ -5,7 +5,7 @@ use biscuit::jwe;
 use biscuit::jwk::JWK;
 use biscuit::jws::{self, Secret};
 use biscuit::{ClaimsSet, Empty, RegisteredClaims, SingleOrMultiple, JWE, JWT};
-use chrono::{Duration, prelude::*};
+use chrono::{prelude::*, Duration};
 use serde::{Deserialize, Serialize};
 
 fn main() {
@@ -101,6 +101,15 @@ fn main() {
 
     let decrypted_jws = decrypted_jwe.payload().unwrap();
     assert_eq!(jws, *decrypted_jws);
+
+    let decoded_jws = decrypted_jws
+        .decode(&secret, SignatureAlgorithm::RS256)
+        .unwrap();
+
+    let claims = decoded_jws.payload().unwrap();
+    let user = &claims.private.username;
+    let password = &claims.private.password;
+    println!("username: {}, password: {}", user, password);
 
     // Don't forget to increment the nonce!
     nonce_counter = nonce_counter + 1u8;
